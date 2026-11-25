@@ -1,7 +1,7 @@
 import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { boardIssue, buildRadar, dataScript, parseSnapshot } from './lib/model.ts';
+import { MODEL_VERSION, boardIssue, buildRadar, dataScript, parseSnapshot } from './lib/model.ts';
 import { buildDossier } from './vendor/makefun-board.ts';
 
 const here = fileURLToPath(new URL('.', import.meta.url));
@@ -33,6 +33,11 @@ if (process.argv.includes('--help') || process.argv.includes('-h')) {
       '',
     ].join('\n'),
   );
+  process.exit(0);
+}
+
+if (process.argv.includes('--version') || process.argv.includes('-v')) {
+  process.stdout.write('token-radar ' + MODEL_VERSION + '\n');
   process.exit(0);
 }
 
@@ -90,4 +95,3 @@ process.stdout.write(
   `token radar: ${snapshot.protocols.length} protocols, ${radar.counts.watchlist} watchlist + ${radar.counts.early} early = ${board.length} rows; ${radar.live_comp_count} live comps\n` +
     `token radar: wrote board.json, data.js, dashboard/${prepareOnly ? ' (prepare-only)' : `, screenshots/ (${shotCount}) and dossier.json`} to ${out}${summaryTail}\n`,
 );
-
