@@ -21,6 +21,21 @@ function fail(message: string, code = 1): never {
   process.exit(code);
 }
 
+if (process.argv.includes('--help') || process.argv.includes('-h')) {
+  process.stdout.write(
+    [
+      'Usage: node main.ts [--input <snapshot.json|directory>] [--output <dir>] [--prepare-only]',
+      '',
+      '  --input <path>   snapshot.json or a directory holding it (default: /input)',
+      '  --output <dir>   output directory (default: $MAKEFUN_OUTPUT_DIR or /output)',
+      '  --prepare-only   write board.json, data.js and dashboard/ only; skip screenshots and dossier.json',
+      '  -h, --help       show this help and exit',
+      '',
+    ].join('\n'),
+  );
+  process.exit(0);
+}
+
 const prepareOnly = process.argv.includes('--prepare-only');
 const inputArg = arg('input', '/input');
 const inputFile = inputArg.endsWith('.json') ? inputArg : join(inputArg, 'snapshot.json');
@@ -60,7 +75,13 @@ if (!prepareOnly) {
   writeFileSync(join(out, 'dossier.json'), buildDossier(out, { text_max_bytes: TEXT_MAX_BYTES, screenshots: SCREENSHOT_CAPS, dashboard: { max_files: 400, max_bytes: 4_194_304 } }));
 }
 
+const top = board[0];
+const dossierBytes = prepareOnly ? null : statSync(join(out, 'dossier.json')).size;
+const summaryTail =
+  (dossierBytes === null ? '' : `; dossier.json ${dossierBytes} bytes`) +
+  (top === undefined ? '' : `; top: ${top.name} (implied ${top.implied_value_usd})`);
+
 process.stdout.write(
   `token radar: ${snapshot.protocols.length} protocols, ${radar.counts.watchlist} watchlist + ${radar.counts.early} early = ${board.length} rows; ${radar.live_comp_count} live comps\n` +
-    `token radar: wrote board.json, data.js, dashboard/${prepareOnly ? ' (prepare-only)' : `, screenshots/ (${shotCount}) and dossier.json`} to ${out}\n`,
+    `token radar: wrote board.json, data.js, dashboard/${prepareOnly ? ' (prepare-only)' : `, screenshots/ (${shotCount}) and dossier.json`} to ${out}${summaryTail}\n`,
 );
