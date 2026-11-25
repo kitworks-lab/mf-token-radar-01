@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Token Launch Radar: pre-token protocols ranked by implied value</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header class="mast">
+  <div class="brand"><span class="mark" aria-hidden="true">TR</span><div><h1>Token Launch <em>Radar</em></h1><p id="asof"></p></div></div>
+  <dl class="kpis" id="kpis"></dl>
+</header>
+<section class="strip">
+  <div class="card" id="cats"></div>
+  <div class="card" id="model"></div>
+</section>
+<section class="sandbox" id="sandbox" hidden></section>
+<nav class="bar" id="bar" aria-label="Filters"></nav>
+<main id="board" tabindex="-1" aria-live="polite">Loading radar...</main>
+<div class="veil" id="veil" hidden></div>
+<aside class="drawer" id="drawer" hidden aria-label="Protocol detail"></aside>
+<script src="../data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
