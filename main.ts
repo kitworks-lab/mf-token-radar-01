@@ -42,7 +42,12 @@ const inputFile = inputArg.endsWith('.json') ? inputArg : join(inputArg, 'snapsh
 if (!existsSync(inputFile)) fail(`no snapshot at ${inputFile}: pass --input <snapshot.json|directory>`, 2);
 const out = arg('output', process.env.MAKEFUN_OUTPUT_DIR ?? '/output');
 
-const snapshot = parseSnapshot(readFileSync(inputFile, 'utf8'));
+let snapshot: ReturnType<typeof parseSnapshot>;
+try {
+  snapshot = parseSnapshot(readFileSync(inputFile, 'utf8'));
+} catch (err) {
+  fail(`invalid snapshot (${err instanceof Error ? err.message : String(err)})`, 2);
+}
 const { board, radar } = buildRadar(snapshot);
 const issue = boardIssue(board, snapshot);
 if (issue !== null) fail(`the model wrote a board the gate refuses: ${issue}`);
@@ -85,3 +90,4 @@ process.stdout.write(
   `token radar: ${snapshot.protocols.length} protocols, ${radar.counts.watchlist} watchlist + ${radar.counts.early} early = ${board.length} rows; ${radar.live_comp_count} live comps\n` +
     `token radar: wrote board.json, data.js, dashboard/${prepareOnly ? ' (prepare-only)' : `, screenshots/ (${shotCount}) and dossier.json`} to ${out}${summaryTail}\n`,
 );
+
